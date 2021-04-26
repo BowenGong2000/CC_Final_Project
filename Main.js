@@ -2,7 +2,7 @@
 // Tic-Tac-Toe^4
 // 
 
-let board = [
+let board = [ // the basic board 3x3
   ['', '', ''],
   ['', '', ''],
   ['', '', '']
@@ -11,15 +11,16 @@ let board = [
 let players = ['X', 'O']
 
 let currentPlayer
-let available = []
+let available = [] // stores all the avaliable spots, in form of [i,j]
 
 function setup() {
   createCanvas(400, 400)
   frameRate(1)
   currentPlayer = floor(random(players.length))
+  // push all spots into avaliable
   for (let j = 0; j < 3; j++) {
     for (let i = 0; i < 3; i++) {
-      available.push([i, j])
+      available.push([i, j]) 
     }
   }
 }
@@ -33,36 +34,34 @@ function checkWinner() {
 
   // horizontal
   for (let i = 0; i < 3; i++) {
-    if (equals3(board[i][0], board[i][1], board[i][2])) {
+    if (equals3(board[i][0], board[i][1], board[i][2])) { 
       winner = board[i][0]
     }
   }
-
   // Vertical
   for (let i = 0; i < 3; i++) {
     if (equals3(board[0][i], board[1][i], board[2][i])) {
       winner = board[0][i]
     }
   }
-
   // Diagonal
-  if (equals3(board[0][0], board[1][1], board[2][2])) {
+  if (equals3(board[0][0], board[1][1], board[2][2])) { // " \ "
     winner = board[0][0]
   }
-  if (equals3(board[2][0], board[1][1], board[0][2])) {
+  if (equals3(board[2][0], board[1][1], board[0][2])) { // " / "
     winner = board[2][0]
   }
 
-  if (winner == null && available.length == 0) {
-    return 'tie'
+  if (winner == null && available.length == 0) { //winner isn't changed and all spots are filled 
+    return 'draw'
   } else {
     return winner
   }
 }
 
 function nextTurn() {
-  let index = floor(random(available.length));
-  let spot = available.splice(index, 1)[0]
+  let index = floor(random(available.length)) // randomly generate a index for a spot from 
+  let spot = available.splice(index, 1)[0]// remove index and store it in spot
   let i = spot[0]
   let j = spot[1]
   board[i][j] = players[currentPlayer]
