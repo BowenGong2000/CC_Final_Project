@@ -1,31 +1,29 @@
 // Bowen's CC Final Project
 // Tic-Tac-Toe^4
-// 
+
 
 let board = [ // the basic board 3x3
   ['', '', ''],
   ['', '', ''],
   ['', '', '']
-]
+];
 
-let players = ['X', 'O']
+let w; 
+let h; 
 
-let currentPlayer
-let available = [] // stores all the avaliable spots, in form of [i,j]
+// define 2 options 
+let ai = 'X'
+let human = 'O'
+let currentPlayer = human
 
 function setup() {
   createCanvas(400, 400)
-  frameRate(1)
-  currentPlayer = floor(random(players.length))
-  // push all spots into avaliable
-  for (let j = 0; j < 3; j++) {
-    for (let i = 0; i < 3; i++) {
-      available.push([i, j]) 
-    }
-  }
+  w = width / 3
+  h = height / 3
+  bestMove()
 }
 
-function equals3(a, b, c) {
+function equals3(a, b, c) { // check 3 consecutive spot equal
   return a == b && b == c && a != ''
 }
 
@@ -34,50 +32,60 @@ function checkWinner() {
 
   // horizontal
   for (let i = 0; i < 3; i++) {
-    if (equals3(board[i][0], board[i][1], board[i][2])) { 
+    if (equals3(board[i][0], board[i][1], board[i][2])) {
       winner = board[i][0]
     }
   }
+
   // Vertical
   for (let i = 0; i < 3; i++) {
     if (equals3(board[0][i], board[1][i], board[2][i])) {
       winner = board[0][i]
     }
   }
+
   // Diagonal
-  if (equals3(board[0][0], board[1][1], board[2][2])) { // " \ "
+  if (equals3(board[0][0], board[1][1], board[2][2])) {
     winner = board[0][0]
   }
-  if (equals3(board[2][0], board[1][1], board[0][2])) { // " / "
+  if (equals3(board[2][0], board[1][1], board[0][2])) {
     winner = board[2][0]
   }
 
-  if (winner == null && available.length == 0) { //winner isn't changed and all spots are filled 
-    return 'draw'
+  let openSpots = 0; 
+  for (let i = 0; i < 3; i++) { // check the remaining avaliable spots
+    for (let j = 0; j < 3; j++) {
+      if (board[i][j] == '') {
+        openSpots++
+      }
+    }
+  }
+
+  if (winner == null && openSpots == 0) { // if the winner is still the defult value and all spots are used, draw
+    return 'tie'
   } else {
     return winner
   }
 }
 
-function nextTurn() {
-  let index = floor(random(available.length)) // randomly generate a index for a spot from 
-  let spot = available.splice(index, 1)[0]// remove index and store it in spot
-  let i = spot[0]
-  let j = spot[1]
-  board[i][j] = players[currentPlayer]
-  currentPlayer = (currentPlayer + 1) % players.length
+function mousePressed() {
+  if (currentPlayer == human) {
+    // Human's turn
+    let i = floor(mouseX / w); // use floor to determine the place 
+    let j = floor(mouseY / h); 
+    // If valid turn
+    if (board[i][j] == '') {
+      board[i][j] = human
+      currentPlayer = ai
+      setTimeout(bestMove,800)
+    }
+  }
 }
-
-// function mousePressed() {
-//   nextTurn()
-// }
 
 function draw() {
   background(255)
-  let w = width / 3
-  let h = height / 3
   strokeWeight(4)
-
+  // draw the grid 
   line(w, 0, w, height)
   line(w * 2, 0, w * 2, height)
   line(0, h, width, h)
@@ -90,27 +98,26 @@ function draw() {
       let spot = board[i][j]
       textSize(32)
       let r = w / 4
-      if (spot == players[1]) {
+      if (spot == human) {
         noFill()
-        ellipse(x, y, r * 2)
-      } else if (spot == players[0]) {
+        ellipse(x, y, r * 2);
+      } 
+      else if (spot == ai) {
         line(x - r, y - r, x + r, y + r)
         line(x + r, y - r, x - r, y + r)
       }
     }
   }
 
-  let result = checkWinner();
+  let result = checkWinner()
   if (result != null) {
     noLoop()
-    let resultP = createP('');
+    let resultP = createP('')
     resultP.style('font-size', '32pt')
     if (result == 'tie') {
       resultP.html('Tie!')
     } else {
       resultP.html(`${result} wins!`)
     }
-  } else {
-    nextTurn()
   }
 }
